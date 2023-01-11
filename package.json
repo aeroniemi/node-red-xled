@@ -1,0 +1,23 @@
+{
+  "name": "node-red-xled",
+  "version": "1.0.0",
+  "description": "Node-Red support for Twinkly lights",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "node-red": {
+    "nodes": {
+      "set-light": "./nodes/set-light/set-light.js"
+    }
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^18.11.18",
+    "@types/node-red": "^1.2.1"
+  },
+  "dependencies": {
+    "axios": "^1.2.2"
+  }
+}
