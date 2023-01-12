@@ -1,0 +1,21 @@
+<script type="text/javascript">
+	RED.nodes.registerType('xled-server', {
+		category: 'config',
+		defaults: {
+			host: {
+				required: true
+			},
+		},
+		label: function () {
+			return this.host;
+		}
+	});
+
+</script>
+<script type="text/html" data-template-name="xled-server">
+	<div class="form-row">
+		<label for="node-config-input-host"><i class="fa fa-bookmark"></i> Host</label>
+		<input type="text" id="node-config-input-host">
+	</div>
+
+</script>

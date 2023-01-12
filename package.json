@@ -8,7 +8,9 @@
   },
   "node-red": {
     "nodes": {
-      "set-light": "./nodes/set-light/set-light.js"
+      "xled-server": "./nodes/xled-server/xled-server.js",
+      "login": "./nodes/login/login.js",
+      "set-brightness": "./nodes/set-brightness/set-brightness.js"
     }
   },
   "author": "",

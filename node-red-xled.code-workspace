@@ -2,10 +2,13 @@
 	"folders": [
 		{
 			"path": "."
-		},
-		{
-			"path": "../tradfri"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.exclude": {
+			"**/*.js": {
+				"when": "$(basename).ts"
+			}
+		}
+	}
 }
