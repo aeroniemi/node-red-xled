@@ -1,7 +1,7 @@
 import { randomBytes } from "node:crypto";
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 // import delay from "delay";
-let errNoToken = Error("No token defined");
+let errNoToken = Error("No valid token");
 export class Light {
 	ipaddr: string;
 	challenge: string;
@@ -48,7 +48,17 @@ export class Light {
 			throw err;
 		}
 		if (res.data.code != 1000) {
-			throw Error("Verification of token failed");
+			throw errNoToken;
+		}
+	}
+	async ensureLoggedIn() {
+		try {
+			this.verify();
+		} catch (err) {
+			if (err != errNoToken) {
+				throw err;
+			}
+			this.login();
 		}
 	}
 	async setOff() {

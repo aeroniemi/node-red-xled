@@ -1,4 +1,8 @@
 "use strict";
+// -----------------------------------------------------------------------------
+// set-brightness node
+// Allows you to set the brightness of a Twinkly light
+// -----------------------------------------------------------------------------
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -35,52 +39,63 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var nodeInit = function (RED) {
-    function setBrightnessNode(node, config) {
-        RED.nodes.createNode(node, config);
-        // this.override = config.override;
-        // this.overrideType = config.overrideType;
-        node.server = RED.nodes.getNode(config.server);
-        // this.brightness = config.brightness;
-        node.log(node.server);
-        if (node.server) {
-            node.on("input", function (msg, send, done) {
-                return __awaiter(this, void 0, void 0, function () {
-                    var brightness, override, err_1;
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0:
-                                node.log(config.override);
-                                _a.label = 1;
-                            case 1:
-                                _a.trys.push([1, 3, , 4]);
-                                brightness = config.brightness || 100;
-                                override = config.override || false;
-                                node.log(config.override);
-                                if (msg.brightness != undefined && override === false) {
-                                    brightness = msg.brightness;
-                                }
-                                if (brightness > 100 || brightness < 0) {
-                                    throw new RangeError("Brightness must be between 0 and 100 inclusive");
-                                }
-                                return [4 /*yield*/, node.server.light.setBrightness(msg.brightness)];
-                            case 2:
-                                _a.sent();
-                                node.debug("Set brightness to ".concat(msg.brightness));
-                                return [3 /*break*/, 4];
-                            case 3:
-                                err_1 = _a.sent();
-                                done(err_1);
-                                return [3 /*break*/, 4];
-                            case 4:
-                                done();
-                                return [2 /*return*/];
-                        }
-                    });
+Object.defineProperty(exports, "__esModule", { value: true });
+// create node
+function default_1(RED) {
+    function setBrightnessNode(config) {
+        RED.nodes.createNode(this, config);
+        // check server exists
+        try {
+            this.server = RED.nodes.getNode(config.server);
+        }
+        catch (err) {
+            this.error("XLED Server not found");
+            return;
+        }
+        // set config
+        this.brightness = config.brightness;
+        this.override = config.override;
+        var node = this; // makes typescript happy when using it inside node.on()
+        node.on("input", function (msg, send, done) {
+            return __awaiter(this, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    setBrightness(node, msg, done);
+                    return [2 /*return*/];
                 });
             });
-        }
+        });
     }
     RED.nodes.registerType("set-brightness", setBrightnessNode);
-};
-module.exports = nodeInit;
+}
+exports.default = default_1;
+function setBrightness(node, msg, done) {
+    return __awaiter(this, void 0, void 0, function () {
+        var brightness, err_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 3, , 4]);
+                    brightness = node.override
+                        ? node.brightness
+                        : msg.brightness || node.brightness;
+                    if (brightness > 100 || brightness < 0)
+                        throw new RangeError("Brightness must be between 0 and 100 inclusive");
+                    return [4 /*yield*/, node.server.light.ensureLoggedIn()];
+                case 1:
+                    _a.sent();
+                    return [4 /*yield*/, node.server.light.setBrightness(brightness)];
+                case 2:
+                    _a.sent();
+                    node.debug("Set brightness to ".concat(brightness));
+                    return [3 /*break*/, 4];
+                case 3:
+                    err_1 = _a.sent();
+                    done(err_1);
+                    return [3 /*break*/, 4];
+                case 4:
+                    done();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
