@@ -39,10 +39,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+// imports
+var colorjs_io_1 = __importDefault(require("colorjs.io"));
 // create node
 function default_1(RED) {
-    function setBrightnessNode(config) {
+    function setColourNode(config) {
         RED.nodes.createNode(this, config);
         // check server exists
         try {
@@ -53,14 +58,21 @@ function default_1(RED) {
             return;
         }
         // set config
+        this.red = config.red;
+        this.green = config.green;
+        this.blue = config.blue;
+        this.hue = config.hue;
+        this.saturation = config.saturation;
         this.brightness = config.brightness;
+        this.hex = config.hex;
         this.override = config.override;
+        this.fade = config.fade;
         var node = this; // makes typescript happy when using it inside node.on()
         node.on("input", function (msg, send, done) {
             return __awaiter(this, void 0, void 0, function () {
                 return __generator(this, function (_a) {
                     switch (_a.label) {
-                        case 0: return [4 /*yield*/, setBrightness(node, msg, done)];
+                        case 0: return [4 /*yield*/, setColour(node, msg, done)];
                         case 1:
                             _a.sent();
                             return [2 /*return*/];
@@ -69,38 +81,54 @@ function default_1(RED) {
             });
         });
     }
-    RED.nodes.registerType("set-brightness", setBrightnessNode);
+    RED.nodes.registerType("set-colour", setColourNode);
 }
 exports.default = default_1;
-function setBrightness(node, msg, done) {
+function setColour(node, msg, done) {
     return __awaiter(this, void 0, void 0, function () {
-        var brightness, err_1;
+        var fade, colour, currentBrightness, err_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 3, , 4]);
-                    brightness = node.override
-                        ? node.brightness
-                        : msg.brightness || node.brightness;
-                    if (brightness > 100 || brightness < 0)
-                        throw new RangeError("Brightness must be between 0 and 100 inclusive");
-                    node.debug("Calling login for brightness");
+                    _a.trys.push([0, 4, , 5]);
+                    fade = (node.override && node.fade) || msg.fade || node.fade;
+                    colour = (node.override && assignColour(node, node)) ||
+                        assignColour(msg, node) ||
+                        assignColour(node, node);
+                    if (colour === undefined)
+                        throw new Error("No colour specified");
+                    colour.to("hsv");
                     return [4 /*yield*/, node.server.light.ensureLoggedIn()];
                 case 1:
                     _a.sent();
-                    return [4 /*yield*/, node.server.light.setBrightness(brightness)];
+                    return [4 /*yield*/, node.server.light.getBrightness()];
                 case 2:
-                    _a.sent();
-                    node.debug("Set brightness to ".concat(brightness));
-                    return [3 /*break*/, 4];
+                    currentBrightness = _a.sent();
+                    return [4 /*yield*/, node.server.light.setHSVColour(colour.hsv.h, colour.hsv.s, currentBrightness)];
                 case 3:
+                    _a.sent();
+                    node.debug("Set colour to (h:".concat(colour.hsv.h, ", s:").concat(colour.hsv.s, ", v:").concat(colour.hsv.v));
+                    return [3 /*break*/, 5];
+                case 4:
                     err_1 = _a.sent();
                     done(err_1);
-                    return [3 /*break*/, 4];
-                case 4:
+                    return [3 /*break*/, 5];
+                case 5:
                     done();
                     return [2 /*return*/];
             }
         });
     });
+}
+function assignColour(source, node) {
+    if (typeof source.red == "number") {
+        return new colorjs_io_1.default("srgb", [source.red / 255, source.green / 255, source.blue / 255], 0);
+    }
+    else if (typeof source.hue == "number") {
+        return new colorjs_io_1.default("hsv", [source.hue, source.saturation, source.brightness], 1);
+    }
+    else if (source.hex.length > 0) {
+        return new colorjs_io_1.default(source.hex);
+    }
+    return undefined;
 }

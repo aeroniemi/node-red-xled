@@ -9,8 +9,8 @@
   "node-red": {
     "nodes": {
       "xled-server": "./nodes/xled-server/xled-server.js",
-      "login": "./nodes/login/login.js",
-      "set-brightness": "./nodes/set-brightness/set-brightness.js"
+      "set-brightness": "./nodes/set-brightness/set-brightness.js",
+      "set-colour": "./nodes/set-colour/set-colour.js"
     }
   },
   "author": "",
@@ -20,6 +20,7 @@
     "@types/node-red": "^1.2.1"
   },
   "dependencies": {
-    "axios": "^1.2.2"
+    "axios": "^1.2.2",
+    "colorjs.io": "^0.4.2"
   }
 }

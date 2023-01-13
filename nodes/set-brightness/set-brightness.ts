@@ -37,7 +37,7 @@ export default function (RED: any): void {
 		this.override = config.override;
 		const node = this; // makes typescript happy when using it inside node.on()
 		node.on("input", async function (msg: any, send, done) {
-			setBrightness(node, msg, done);
+			await setBrightness(node, msg, done);
 		});
 	}
 	RED.nodes.registerType("set-brightness", setBrightnessNode);
@@ -50,7 +50,7 @@ async function setBrightness(node: setBrightnessNode, msg: any, done: any) {
 
 		if (brightness > 100 || brightness < 0)
 			throw new RangeError("Brightness must be between 0 and 100 inclusive");
-
+		node.debug("Calling login for brightness");
 		await node.server.light.ensureLoggedIn();
 		await node.server.light.setBrightness(brightness);
 		node.debug(`Set brightness to ${brightness}`);

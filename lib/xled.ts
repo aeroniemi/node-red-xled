@@ -1,12 +1,13 @@
 import { randomBytes } from "node:crypto";
 import axios, { AxiosInstance, AxiosResponse } from "axios";
-// import delay from "delay";
+import delay from "delay";
 let errNoToken = Error("No valid token");
 export class Light {
 	ipaddr: string;
 	challenge: string;
 	net: AxiosInstance;
 	token: AuthenticationToken | undefined;
+	activeLoginCall: boolean;
 
 	constructor(ipaddr: string) {
 		this.ipaddr = ipaddr;
@@ -15,8 +16,15 @@ export class Light {
 			baseURL: `http://${this.ipaddr}/xled/v1/`,
 			timeout: 1000,
 		});
+		this.activeLoginCall = false;
+	}
+	async autoEndLoginCall() {
+		await delay(1000);
+		this.activeLoginCall = false;
 	}
 	async login() {
+		this.activeLoginCall = true;
+		this.autoEndLoginCall();
 		let res: AxiosResponse;
 		try {
 			res = await this.net.post("/login", {
@@ -36,10 +44,11 @@ export class Light {
 		} catch (err) {
 			throw err;
 		}
+		this.activeLoginCall = false;
 	}
 	async verify() {
 		let res: AxiosResponse;
-		if (this.token === undefined) throw Error("No token defined");
+		if (this.token === undefined) throw errNoToken;
 		try {
 			res = await this.net.post("/verify", {
 				"challenge-response": this.token.getChallengeResponse(),
@@ -53,12 +62,17 @@ export class Light {
 	}
 	async ensureLoggedIn() {
 		try {
-			this.verify();
+			await this.verify();
 		} catch (err) {
 			if (err != errNoToken) {
 				throw err;
 			}
-			this.login();
+			let i = 0;
+			while (this.activeLoginCall && i < 5) {
+				await delay(1200);
+				i++;
+			}
+			await this.login();
 		}
 	}
 	async setOff() {
@@ -78,11 +92,22 @@ export class Light {
 			value: value,
 		});
 	}
+	async getBrightness() {
+		let data = await this.sendGetRequest("/led/out/brightness", {});
+		return data.value;
+	}
 	async setRGBColour(red: number, green: number, blue: number) {
 		return await this.sendPostRequest("/led/color", {
 			red: red,
 			green: green,
 			blue: blue,
+		});
+	}
+	async setHSVColour(hue: number, saturation: number, value: number) {
+		return await this.sendPostRequest("/led/color", {
+			hue: hue,
+			saturation: saturation * 2.55,
+			value: value * 2.55,
 		});
 	}
 	async setMode(mode: string) {
@@ -98,6 +123,19 @@ export class Light {
 		}
 		if (res.data.code != 1000) {
 			throw Error("Mode set failed");
+		}
+		return res.data;
+	}
+	async sendGetRequest(url: string, params: object) {
+		if (!this.token) throw errNoToken;
+		let res: AxiosResponse;
+		try {
+			res = await this.net.get(url, params);
+		} catch (err) {
+			throw err;
+		}
+		if (res.data.code != 1000) {
+			throw Error("Get Request failed");
 		}
 		return res.data;
 	}
