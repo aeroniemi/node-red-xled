@@ -96,6 +96,20 @@ export class Light {
 		let data = await this.sendGetRequest("/led/out/brightness", {});
 		return data.value;
 	}
+
+	async getHSVColour() {
+		let data = await this.sendGetRequest("/led/color", {});
+		let res: [number, number, number] = [
+			data.hue,
+			data.saturation / 2.55,
+			data.value / 2.55,
+		];
+		return res;
+	}
+	async getRGBColour() {
+		let data = await this.sendGetRequest("/led/color", {});
+		return [data.red / 2.55, data.green / 2.55, data.blue / 2.55];
+	}
 	async setRGBColour(red: number, green: number, blue: number) {
 		return await this.sendPostRequest("/led/color", {
 			red: red,
@@ -105,9 +119,9 @@ export class Light {
 	}
 	async setHSVColour(hue: number, saturation: number, value: number) {
 		return await this.sendPostRequest("/led/color", {
-			hue: hue,
-			saturation: saturation * 2.55,
-			value: value * 2.55,
+			hue: Math.floor(hue),
+			saturation: Math.floor(saturation * 2.55),
+			value: Math.floor(value * 2.55),
 		});
 	}
 	async setMode(mode: string) {

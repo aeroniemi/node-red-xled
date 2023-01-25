@@ -45,6 +45,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 // imports
 var colorjs_io_1 = __importDefault(require("colorjs.io"));
+var delay_1 = __importDefault(require("delay"));
 // create node
 function default_1(RED) {
     function setColourNode(config) {
@@ -66,6 +67,7 @@ function default_1(RED) {
         this.brightness = config.brightness;
         this.hex = config.hex;
         this.override = config.override;
+        this.mb = config.mb;
         this.fade = config.fade;
         var node = this; // makes typescript happy when using it inside node.on()
         node.on("input", function (msg, send, done) {
@@ -86,12 +88,13 @@ function default_1(RED) {
 exports.default = default_1;
 function setColour(node, msg, done) {
     return __awaiter(this, void 0, void 0, function () {
-        var fade, colour, currentBrightness, err_1;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        var fade, colour, currentBrightness, currentColour, _a, _b, steps, _i, steps_1, step, err_1;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
                 case 0:
-                    _a.trys.push([0, 4, , 5]);
-                    fade = (node.override && node.fade) || msg.fade || node.fade;
+                    _c.trys.push([0, 10, , 11]);
+                    node.debug("Fade: ".concat([node.fade, msg.fade]));
+                    fade = (node.override && node.fade) || msg.fade || node.fade || 0;
                     colour = (node.override && assignColour(node, node)) ||
                         assignColour(msg, node) ||
                         assignColour(node, node);
@@ -100,20 +103,58 @@ function setColour(node, msg, done) {
                     colour.to("hsv");
                     return [4 /*yield*/, node.server.light.ensureLoggedIn()];
                 case 1:
-                    _a.sent();
+                    _c.sent();
                     return [4 /*yield*/, node.server.light.getBrightness()];
                 case 2:
-                    currentBrightness = _a.sent();
-                    return [4 /*yield*/, node.server.light.setHSVColour(colour.hsv.h, colour.hsv.s, currentBrightness)];
+                    currentBrightness = _c.sent();
+                    if (!(fade == 0)) return [3 /*break*/, 4];
+                    return [4 /*yield*/, node.server.light.setHSVColour(colour.hsv.h, colour.hsv.s, node.mb ? currentBrightness : colour.hsv.v)];
                 case 3:
-                    _a.sent();
-                    node.debug("Set colour to (h:".concat(colour.hsv.h, ", s:").concat(colour.hsv.s, ", v:").concat(colour.hsv.v));
-                    return [3 /*break*/, 5];
+                    _c.sent();
+                    node.debug("Set colour to (h:".concat(colour.hsv.h, ", s:").concat(colour.hsv.s, ", v:").concat(colour.hsv.v, ")"));
+                    return [3 /*break*/, 9];
                 case 4:
-                    err_1 = _a.sent();
-                    done(err_1);
-                    return [3 /*break*/, 5];
+                    _a = colorjs_io_1.default.bind;
+                    _b = [void 0, "hsv"];
+                    return [4 /*yield*/, node.server.light.getHSVColour()];
                 case 5:
+                    currentColour = new (_a.apply(colorjs_io_1.default, _b.concat([_c.sent(), 1])))();
+                    if (node.mb) {
+                        currentColour.hsv.v = currentBrightness;
+                        colour.hsv.v = currentBrightness;
+                    }
+                    steps = currentColour.steps(colour, {
+                        space: "srgb",
+                        outputSpace: "hsv",
+                        maxDeltaE: 2.65,
+                        maxSteps: Math.floor(15 * fade),
+                        steps: 3,
+                        method: "JzCzhz",
+                    });
+                    if (!((steps === null || steps === void 0 ? void 0 : steps.length) > 1)) return [3 /*break*/, 9];
+                    node.debug("steps: ".concat(steps.length));
+                    _i = 0, steps_1 = steps;
+                    _c.label = 6;
+                case 6:
+                    if (!(_i < steps_1.length)) return [3 /*break*/, 9];
+                    step = steps_1[_i];
+                    node.debug("Set colour to (h:".concat(step.hsv.h, ", s:").concat(step.hsv.s, ", v:").concat(step.hsv.v, ")"));
+                    return [4 /*yield*/, Promise.all([
+                            node.server.light.setHSVColour(step.hsv.h, step.hsv.s, step.hsv.v),
+                            (0, delay_1.default)((fade * 1000) / steps.length),
+                        ])];
+                case 7:
+                    _c.sent();
+                    _c.label = 8;
+                case 8:
+                    _i++;
+                    return [3 /*break*/, 6];
+                case 9: return [3 /*break*/, 11];
+                case 10:
+                    err_1 = _c.sent();
+                    done(err_1);
+                    return [3 /*break*/, 11];
+                case 11:
                     done();
                     return [2 /*return*/];
             }
@@ -121,14 +162,17 @@ function setColour(node, msg, done) {
     });
 }
 function assignColour(source, node) {
-    if (typeof source.red == "number") {
+    if ((source === null || source === void 0 ? void 0 : source.red) > 0) {
         return new colorjs_io_1.default("srgb", [source.red / 255, source.green / 255, source.blue / 255], 0);
     }
-    else if (typeof source.hue == "number") {
+    else if ((source === null || source === void 0 ? void 0 : source.hue) > 0) {
         return new colorjs_io_1.default("hsv", [source.hue, source.saturation, source.brightness], 1);
     }
-    else if (source.hex.length > 0) {
+    else if (source === null || source === void 0 ? void 0 : source.hex) {
         return new colorjs_io_1.default(source.hex);
+    }
+    else if (source === null || source === void 0 ? void 0 : source.temperature) {
+        return new colorjs_io_1.default(source.temperature);
     }
     return undefined;
 }

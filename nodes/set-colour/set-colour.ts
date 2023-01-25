@@ -7,7 +7,7 @@
 import Colour from "colorjs.io";
 import { NodeInitializer, Node, NodeDef, NodeMessageInFlow } from "node-red";
 import { xledServerNode } from "../xled-server/xled-server.js";
-
+import delay from "delay";
 // interfaces
 interface colourNodeConfig {
 	server: xledServerNode | string;
@@ -19,7 +19,9 @@ interface colourNodeConfig {
 	saturation: number;
 	brightness: number;
 	hex: string;
+	temperature: number;
 	fade: number;
+	mb: boolean;
 }
 export interface colourNode extends Node, colourNodeConfig {
 	server: xledServerNode;
@@ -48,6 +50,7 @@ export default function (RED: any): void {
 		this.brightness = config.brightness;
 		this.hex = config.hex;
 		this.override = config.override;
+		this.mb = config.mb;
 		this.fade = config.fade;
 		const node = this; // makes typescript happy when using it inside node.on()
 		node.on("input", async function (msg: any, send, done) {
@@ -59,44 +62,80 @@ export default function (RED: any): void {
 
 async function setColour(node: colourNode, msg: any, done: any) {
 	try {
-		let fade = (node.override && node.fade) || msg.fade || node.fade;
+		node.debug(`Fade: ${[node.fade, msg.fade]}`);
+		let fade = (node.override && node.fade) || msg.fade || node.fade || 0;
 		let colour =
 			(node.override && assignColour(node, node)) ||
 			assignColour(msg, node) ||
 			assignColour(node, node);
-
 		if (colour === undefined) throw new Error("No colour specified");
 		colour.to("hsv");
 		await node.server.light.ensureLoggedIn();
 		let currentBrightness = await node.server.light.getBrightness();
-		await node.server.light.setHSVColour(
-			colour.hsv.h,
-			colour.hsv.s,
-			currentBrightness
-		);
-		node.debug(
-			`Set colour to (h:${colour.hsv.h}, s:${colour.hsv.s}, v:${colour.hsv.v}`
-		);
+
+		if (fade == 0) {
+			await node.server.light.setHSVColour(
+				colour.hsv.h,
+				colour.hsv.s,
+				node.mb ? currentBrightness : colour.hsv.v
+			);
+			node.debug(
+				`Set colour to (h:${colour.hsv.h}, s:${colour.hsv.s}, v:${colour.hsv.v})`
+			);
+		} else {
+			let currentColour = new Colour(
+				"hsv",
+				await node.server.light.getHSVColour(),
+				1
+			);
+			if (node.mb) {
+				currentColour.hsv.v = currentBrightness;
+				colour.hsv.v = currentBrightness;
+			}
+			// @ts-expect-error
+			let steps: any = currentColour.steps(colour, {
+				space: "srgb",
+				outputSpace: "hsv",
+				maxDeltaE: 2.65, // max deltaE between consecutive steps (optional)
+				maxSteps: Math.floor(15 * fade), // min number of steps
+				steps: 3,
+				method: "JzCzhz",
+			});
+			if (steps?.length > 1) {
+				node.debug(`steps: ${steps.length}`);
+				for (let step of steps) {
+					node.debug(
+						`Set colour to (h:${step.hsv.h}, s:${step.hsv.s}, v:${step.hsv.v})`
+					);
+					await Promise.all([
+						node.server.light.setHSVColour(step.hsv.h, step.hsv.s, step.hsv.v),
+						delay((fade * 1000) / steps.length),
+					]);
+				}
+			}
+		}
 	} catch (err: any) {
 		done(err);
 	}
 	done();
 }
 function assignColour(source: any, node: any) {
-	if (typeof source.red == "number") {
+	if (source?.red > 0) {
 		return new Colour(
 			"srgb",
 			[source.red / 255, source.green / 255, source.blue / 255],
 			0
 		);
-	} else if (typeof source.hue == "number") {
+	} else if (source?.hue > 0) {
 		return new Colour(
 			"hsv",
 			[source.hue, source.saturation, source.brightness],
 			1
 		);
-	} else if (source.hex.length > 0) {
+	} else if (source?.hex) {
 		return new Colour(source.hex);
+	} else if (source?.temperature) {
+		return new Colour(source.temperature);
 	}
 	return undefined;
 }
