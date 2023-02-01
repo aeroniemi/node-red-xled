@@ -171,8 +171,5 @@ function assignColour(source, node) {
     else if (source === null || source === void 0 ? void 0 : source.hex) {
         return new colorjs_io_1.default(source.hex);
     }
-    else if (source === null || source === void 0 ? void 0 : source.temperature) {
-        return new colorjs_io_1.default(source.temperature);
-    }
     return undefined;
 }
