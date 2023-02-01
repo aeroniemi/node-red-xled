@@ -19,7 +19,6 @@ interface colourNodeConfig {
 	saturation: number;
 	brightness: number;
 	hex: string;
-	temperature: number;
 	fade: number;
 	mb: boolean;
 }
@@ -134,8 +133,6 @@ function assignColour(source: any, node: any) {
 		);
 	} else if (source?.hex) {
 		return new Colour(source.hex);
-	} else if (source?.temperature) {
-		return new Colour(source.temperature);
 	}
 	return undefined;
 }
