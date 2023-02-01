@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "axios": "^1.2.2",
-    "colorjs.io": "^0.4.2"
+    "colorjs.io": "^0.4.2",
+    "delay": "^5.0.0"
   }
 }
