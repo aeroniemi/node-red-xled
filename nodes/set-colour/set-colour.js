@@ -116,10 +116,10 @@ function setColour(node, msg, done) {
                     return [3 /*break*/, 6];
                 case 4:
                     colour.to("srgb");
-                    return [4 /*yield*/, node.server.light.setRGBColour(colour.srgb.r, colour.srgb.g, colour.srgb.b)];
+                    return [4 /*yield*/, node.server.light.setRGBColour(Math.round(colour.srgb.r * 255), Math.round(colour.srgb.g * 255), Math.round(colour.srgb.b * 255))];
                 case 5:
                     _c.sent();
-                    node.debug("Set colour to (r:".concat(colour.srgb.r, ", g:").concat(colour.srgb.g, ", b:").concat(colour.srgb.b, ")"));
+                    node.debug("Set colour to (r:".concat(Math.round(colour.srgb.r), ", g:").concat(Math.round(colour.srgb.g), ", b:").concat(Math.round(colour.srgb.b), ")"));
                     _c.label = 6;
                 case 6: return [3 /*break*/, 12];
                 case 7:

@@ -83,18 +83,18 @@ async function setColour(node: colourNode, msg: any, done: any) {
 					`Set colour to (h:${colour.hsv.h}, s:${colour.hsv.s}, v:${colour.hsv.v})`
 				);
 			} else {
-				colour.to("srgb")
+				colour.to("srgb");
 				await node.server.light.setRGBColour(
-					colour.srgb.r,
-					colour.srgb.g,
-					colour.srgb.b
+					Math.round(colour.srgb.r * 255),
+					Math.round(colour.srgb.g * 255),
+					Math.round(colour.srgb.b * 255)
 				);
 				node.debug(
-					`Set colour to (r:${colour.srgb.r}, g:${colour.srgb.g}, b:${colour.srgb.b})`
+					`Set colour to (r:${Math.round(colour.srgb.r)}, g:${Math.round(
+						colour.srgb.g
+					)}, b:${Math.round(colour.srgb.b)})`
 				);
 			}
-			
-			
 		} else {
 			let currentColour = new Colour(
 				"hsv",
