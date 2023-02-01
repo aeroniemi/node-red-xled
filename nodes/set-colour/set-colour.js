@@ -92,7 +92,7 @@ function setColour(node, msg, done) {
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
-                    _c.trys.push([0, 10, , 11]);
+                    _c.trys.push([0, 13, , 14]);
                     node.debug("Fade: ".concat([node.fade, msg.fade]));
                     fade = (node.override && node.fade) || msg.fade || node.fade || 0;
                     colour = (node.override && assignColour(node, node)) ||
@@ -107,17 +107,26 @@ function setColour(node, msg, done) {
                     return [4 /*yield*/, node.server.light.getBrightness()];
                 case 2:
                     currentBrightness = _c.sent();
-                    if (!(fade == 0)) return [3 /*break*/, 4];
+                    if (!(fade == 0)) return [3 /*break*/, 7];
+                    if (!node.mb) return [3 /*break*/, 4];
                     return [4 /*yield*/, node.server.light.setHSVColour(colour.hsv.h, colour.hsv.s, node.mb ? currentBrightness : colour.hsv.v)];
                 case 3:
                     _c.sent();
                     node.debug("Set colour to (h:".concat(colour.hsv.h, ", s:").concat(colour.hsv.s, ", v:").concat(colour.hsv.v, ")"));
-                    return [3 /*break*/, 9];
+                    return [3 /*break*/, 6];
                 case 4:
+                    colour.to("srgb");
+                    return [4 /*yield*/, node.server.light.setRGBColour(colour.srgb.r, colour.srgb.g, colour.srgb.b)];
+                case 5:
+                    _c.sent();
+                    node.debug("Set colour to (r:".concat(colour.srgb.r, ", g:").concat(colour.srgb.g, ", b:").concat(colour.srgb.b, ")"));
+                    _c.label = 6;
+                case 6: return [3 /*break*/, 12];
+                case 7:
                     _a = colorjs_io_1.default.bind;
                     _b = [void 0, "hsv"];
                     return [4 /*yield*/, node.server.light.getHSVColour()];
-                case 5:
+                case 8:
                     currentColour = new (_a.apply(colorjs_io_1.default, _b.concat([_c.sent(), 1])))();
                     if (node.mb) {
                         currentColour.hsv.v = currentBrightness;
@@ -131,30 +140,30 @@ function setColour(node, msg, done) {
                         steps: 3,
                         method: "JzCzhz",
                     });
-                    if (!((steps === null || steps === void 0 ? void 0 : steps.length) > 1)) return [3 /*break*/, 9];
+                    if (!((steps === null || steps === void 0 ? void 0 : steps.length) > 1)) return [3 /*break*/, 12];
                     node.debug("steps: ".concat(steps.length));
                     _i = 0, steps_1 = steps;
-                    _c.label = 6;
-                case 6:
-                    if (!(_i < steps_1.length)) return [3 /*break*/, 9];
+                    _c.label = 9;
+                case 9:
+                    if (!(_i < steps_1.length)) return [3 /*break*/, 12];
                     step = steps_1[_i];
                     node.debug("Set colour to (h:".concat(step.hsv.h, ", s:").concat(step.hsv.s, ", v:").concat(step.hsv.v, ")"));
                     return [4 /*yield*/, Promise.all([
                             node.server.light.setHSVColour(step.hsv.h, step.hsv.s, step.hsv.v),
                             (0, delay_1.default)((fade * 1000) / steps.length),
                         ])];
-                case 7:
-                    _c.sent();
-                    _c.label = 8;
-                case 8:
-                    _i++;
-                    return [3 /*break*/, 6];
-                case 9: return [3 /*break*/, 11];
                 case 10:
+                    _c.sent();
+                    _c.label = 11;
+                case 11:
+                    _i++;
+                    return [3 /*break*/, 9];
+                case 12: return [3 /*break*/, 14];
+                case 13:
                     err_1 = _c.sent();
                     done(err_1);
-                    return [3 /*break*/, 11];
-                case 11:
+                    return [3 /*break*/, 14];
+                case 14:
                     done();
                     return [2 /*return*/];
             }

@@ -73,14 +73,28 @@ async function setColour(node: colourNode, msg: any, done: any) {
 		let currentBrightness = await node.server.light.getBrightness();
 
 		if (fade == 0) {
-			await node.server.light.setHSVColour(
-				colour.hsv.h,
-				colour.hsv.s,
-				node.mb ? currentBrightness : colour.hsv.v
-			);
-			node.debug(
-				`Set colour to (h:${colour.hsv.h}, s:${colour.hsv.s}, v:${colour.hsv.v})`
-			);
+			if (node.mb) {
+				await node.server.light.setHSVColour(
+					colour.hsv.h,
+					colour.hsv.s,
+					node.mb ? currentBrightness : colour.hsv.v
+				);
+				node.debug(
+					`Set colour to (h:${colour.hsv.h}, s:${colour.hsv.s}, v:${colour.hsv.v})`
+				);
+			} else {
+				colour.to("srgb")
+				await node.server.light.setRGBColour(
+					colour.srgb.r,
+					colour.srgb.g,
+					colour.srgb.b
+				);
+				node.debug(
+					`Set colour to (r:${colour.srgb.r}, g:${colour.srgb.g}, b:${colour.srgb.b})`
+				);
+			}
+			
+			
 		} else {
 			let currentColour = new Colour(
 				"hsv",
