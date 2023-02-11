@@ -1,7 +1,8 @@
 {
   "name": "node-red-xled",
-  "version": "2.0.0",
-  "description": "Node-Red support for Twinkly lights",
+  "version": "1.0.0",
+  "description": "Node-Red nodes for controlling the brightness/colour of Twinkly lights",
+  "homepage": "https://github.com/aeroniemi/node-red-xled#readme",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -14,7 +15,8 @@
       "set-colour-hsv": "./nodes/set-colour-hsv/set-colour-hsv.js"
     }
   },
-  "author": "",
+  "author": "Lexi Beavil (https://github.com/aeroniemi)",
+  "repository": "github:aeroniemi/node-red-xled",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^18.11.18",
