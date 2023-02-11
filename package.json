@@ -1,6 +1,6 @@
 {
   "name": "node-red-xled",
-  "version": "1.0.4",
+  "version": "2.0.0",
   "description": "Node-Red support for Twinkly lights",
   "main": "index.js",
   "scripts": {
