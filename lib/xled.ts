@@ -1,7 +1,12 @@
+// imports
 import { randomBytes } from "node:crypto";
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 import delay from "delay";
+
+// create error
 let errNoToken = Error("No valid token");
+
+// the important class
 export class Light {
 	ipaddr: string;
 	challenge: string;
@@ -173,23 +178,3 @@ class AuthenticationToken {
 		return this.challengeResponse;
 	}
 }
-// async function main() {
-// 	let sabrina = new Light("192.168.0.26");
-// 	await sabrina.login();
-// 	// await sabrina.setOff();
-// 	// await delay(5000);
-// 	// await sabrina.setMode("color");
-// 	await sabrina.setBrightness(100);
-// 	while (true) {
-// 		// await delay(2000);
-// 		await sabrina.setRGBColour(
-// 			Math.floor(Math.random() * 255),
-// 			Math.floor(Math.random() * 255),
-// 			Math.floor(Math.random() * 255)
-// 		);
-// 	}
-// 	// await delay(2000);
-// 	// await sabrina.setBrightness(5);
-// 	// console.log(sabrina);
-// }
-// main();

@@ -1,0 +1,70 @@
+<script type="text/javascript">
+	RED.nodes.registerType('set-colour-rgb', {
+		category: 'xled',
+		color: '#a6bbcf',
+		defaults: {
+			server: {
+				value: "",
+				type: "xled-server"
+			},
+			red: {
+				value: undefined,
+				required: false
+			},
+			green: {
+				value: undefined,
+				required: false
+			},
+			blue: {
+				value: undefined,
+				required: false
+			},
+			hex: {
+				value: "",
+				required: false
+			},
+			override: {
+				value: false,
+			},
+		},
+		icon: "font-awesome/fa-lightbulb-o",
+		inputs: 1,
+		outputs: 0,
+		label: "set-colour-rgb"
+	});
+	$("#node-input-override").typedInput({
+		type: 'bool',
+	})
+
+</script>
+<script type="text/html" data-template-name="set-colour-rgb">
+	<div class="form-row">
+		<label for="node-input-xled-server">Server</label>
+		<input type="text" id="node-input-server">
+	</div>
+	<div class="form-row">
+		<label for="node-input-red">Red</label>
+		<input type="text" id="node-input-red">
+	</div>
+	<div class="form-row">
+		<label for="node-input-green">Green</label>
+		<input type="text" id="node-input-green">
+	</div>
+	<div class="form-row">
+		<label for="node-input-blue">Blue</label>
+		<input type="text" id="node-input-blue">
+	</div>
+	<div class="form-row">
+		<label for="node-input-hex">Hex</label>
+		<input type="text" id="node-input-hex">
+	</div>
+	<div class="form-row">
+		<label for="node-input-override">Override</label>
+		<input type="checkbox" id="node-input-override">
+	</div>
+
+</script>
+<script type="text/html" data-help-name="set-colour-rgb">
+	<p>Set the colour of a Twinkly light using Hex or RGB</p>
+
+</script>

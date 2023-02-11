@@ -10,7 +10,8 @@
     "nodes": {
       "xled-server": "./nodes/xled-server/xled-server.js",
       "set-brightness": "./nodes/set-brightness/set-brightness.js",
-      "set-colour": "./nodes/set-colour/set-colour.js"
+      "set-colour-rgb": "./nodes/set-colour-rgb/set-colour-rgb.js",
+      "set-colour-hsv": "./nodes/set-colour-hsv/set-colour-hsv.js"
     }
   },
   "author": "",
