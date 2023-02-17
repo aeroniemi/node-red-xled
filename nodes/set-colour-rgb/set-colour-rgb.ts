@@ -4,6 +4,7 @@
 // -----------------------------------------------------------------------------
 
 // imports
+import { rgbColour } from "xled2";
 import {
 	setColourNode,
 	setColourIf,
@@ -22,11 +23,13 @@ export default function (RED: any): void {
 async function setColourRGB(state: setColourIf) {
 	state.colour.to("srgb"); // unsure if this is entirely needed but best to check
 
-	let r = Math.round(state.colour.srgb.r * 255);
-	let g = Math.round(state.colour.srgb.g * 255);
-	let b = Math.round(state.colour.srgb.b * 255);
+	let rgb: rgbColour = {
+		red: Math.round(state.colour.srgb.r * 255),
+		green: Math.round(state.colour.srgb.g * 255),
+		blue: Math.round(state.colour.srgb.b * 255),
+	};
 
-	await state.node.server.light.setRGBColour(r, g, b);
+	await state.node.server.light.setRGBColour(rgb);
 
-	state.node.debug(`Set colour to (r:${r}, g:${g}, b:${b})`);
+	state.node.debug(`Set colour to ${JSON.stringify(rgb)}`);
 }

@@ -4,6 +4,7 @@
 // -----------------------------------------------------------------------------
 
 // imports
+import { hsvColour } from "xled2";
 import {
 	setColourNode,
 	setColourIf,
@@ -20,11 +21,13 @@ export default function (RED: any): void {
 
 // deal with the actual setting
 async function setColourHSV(state: setColourIf) {
-	let h = Math.round(state.colour.hsv.h || 0);
-	let s = Math.round(state.colour.hsv.s * 255);
-	let v = Math.round(state.colour.hsv.v * 255);
+	let hsv: hsvColour = {
+		hue: Math.round(state.colour.hsv.h || 0),
+		saturation: Math.round(state.colour.hsv.s * 255),
+		value: Math.round(state.colour.hsv.v * 255),
+	};
 
-	await state.node.server.light.setHSVColour(h, s, v);
+	await state.node.server.light.setHSVColour(hsv);
 
-	state.node.debug(`Set colour to (h:${h}, s:${s}, v:${v})`);
+	state.node.debug(`Set colour to ${JSON.stringify(hsv)}`);
 }
