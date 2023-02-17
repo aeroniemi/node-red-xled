@@ -26,6 +26,14 @@
     "nodes/**/*",
     "lib/**/*"
   ],
+  "keywords": [
+    "node-red",
+    "xled",
+    "twinkly",
+    "led",
+    "lights",
+    "christmas"
+  ],
   "dependencies": {
     "axios": "^1.2.2",
     "colorjs.io": "^0.4.2",
