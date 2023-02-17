@@ -23,8 +23,9 @@
     "@types/node-red": "^1.2.1"
   },
   "files": [
-    "nodes/**/*",
-    "lib/**/*"
+    "**/*.d.ts",
+    "**/*.js",
+    "**/*.html"
   ],
   "keywords": [
     "node-red",
