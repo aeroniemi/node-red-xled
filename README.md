@@ -11,7 +11,7 @@ A set of (typescript) nodes for node-red to allow you to control Twinkly lights.
 
 ## Installation
 
-- From NPM: `npm install node-red-xled`
+- From NPM: `npm install @aeroniemi/node-red-xled`
 - From source:
   - Clone the repository
   - Compile the typescript to JS (run `tsc`)
