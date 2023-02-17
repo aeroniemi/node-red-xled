@@ -4,8 +4,8 @@
 // -----------------------------------------------------------------------------
 
 // imports
-import { NodeInitializer, Node, NodeDef, NodeMessageInFlow } from "node-red";
-import { Light } from "../../lib/xled";
+import { Node, NodeDef } from "node-red";
+import { Light } from "xled2";
 
 // interfaces
 interface xledServerConfig extends NodeDef {

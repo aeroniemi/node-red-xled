@@ -4,8 +4,11 @@
 // -----------------------------------------------------------------------------
 
 // imports
-import { setColourNode, setColourIf } from "../../lib/general-nodes.js";
-import { colourNodeDef } from "../set-colour/set-colour.js";
+import {
+	setColourNode,
+	setColourIf,
+	colourNodeDef,
+} from "../../lib/general-nodes.js";
 
 // create node
 export default function (RED: any): void {

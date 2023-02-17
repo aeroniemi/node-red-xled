@@ -4,7 +4,7 @@
 // -----------------------------------------------------------------------------
 
 // imports
-import { NodeInitializer, Node, NodeDef, NodeMessageInFlow } from "node-red";
+import { Node, NodeDef } from "node-red";
 import { xledServerNode } from "../xled-server/xled-server.js";
 
 // interfaces
