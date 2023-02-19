@@ -6,19 +6,20 @@ import { Node, NodeDef } from "node-red";
 // take a object and returns a colour it if contains valid attributes
 // -----------------------------------------------------------------------------
 function assignColour(source: any, node: any) {
-	if (source?.red && !(source.red == "")) {
+	
+	if (!isNaN(Number(source?.red))) {
 		return new Colour(
 			"srgb",
-			[source.red / 255, source.green / 255, source.blue / 255],
+			[source.red / 255 || 0, source.green / 255 || 0, source.blue / 255 || 0],
 			0
 		);
-	} else if (source?.hue && !(source.hue == "")) {
+	} else if (source?.hue) {
 		return new Colour(
 			"hsv",
 			[source.hue, source.saturation, source.brightness],
 			1
 		);
-	} else if (source?.hex && !(source.hex == "")) {
+	} else if (source?.hex) {
 		return new Colour(source.hex);
 	}
 	throw new Error("No Colour Defined (assignColour)");
