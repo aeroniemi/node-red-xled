@@ -4,7 +4,7 @@
 // -----------------------------------------------------------------------------
 
 // imports
-import { rgbColour } from "xled2";
+import { deviceMode, rgbColour } from "xled2";
 import {
 	setColourNode,
 	setColourIf,
@@ -28,7 +28,7 @@ async function setColourRGB(state: setColourIf) {
 		green: Math.round(state.colour.srgb.g * 255),
 		blue: Math.round(state.colour.srgb.b * 255),
 	};
-
+	await state.node.server.light.setMode(deviceMode.rt);
 	await state.node.server.light.setRGBColourRealTime(rgb);
 
 	state.node.debug(`Set colour to ${JSON.stringify(rgb)}`);
