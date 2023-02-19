@@ -67,9 +67,9 @@ export function setColourNode(
 		return;
 	}
 	node.on("input", async function (msg: any, send: any, done: any) {
-		let colour: Colour = selectColour(node, config, msg);
-		await node.server.light.ensureLoggedIn();
 		try {
+			let colour: Colour = selectColour(node, config, msg);
+			await node.server.light.ensureLoggedIn();
 			await returnFn(<setColourIf>{
 				node: node,
 				config: config,
