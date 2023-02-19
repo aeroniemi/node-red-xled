@@ -1,6 +1,6 @@
 {
   "name": "@aeroniemi/node-red-xled",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "description": "Node-Red nodes for controlling the brightness/colour of Twinkly lights",
   "homepage": "https://github.com/aeroniemi/node-red-xled#readme",
   "main": "index.js",
