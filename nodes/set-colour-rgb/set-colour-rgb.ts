@@ -29,7 +29,7 @@ async function setColourRGB(state: setColourIf) {
 		blue: Math.round(state.colour.srgb.b * 255),
 	};
 
-	await state.node.server.light.setRGBColour(rgb);
+	await state.node.server.light.setRGBColourRealTime(rgb);
 
 	state.node.debug(`Set colour to ${JSON.stringify(rgb)}`);
 }
